@@ -1,8 +1,8 @@
-﻿{
+{
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
   "name": "io.github.NicoHern/abapilot-mcp",
   "title": "ABAPilot",
-  "description": "MCP server for SAP ECC and on-premise S/4HANA: natural-language queries and ABAP dev tooling.",
+  "description": "AI & MCP server for SAP ECC and on-premise S/4HANA — in-system ABAP, natural-language business queries and ABAP dev tooling. No BTP, no ADT, no RISE.",
   "version": "1.0.2",
   "repository": {
     "url": "https://github.com/NicoHern/abapilot-mcp",
@@ -12,7 +12,6 @@
   "packages": [
     {
       "registryType": "npm",
-      "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "abapilot",
       "version": "1.0.2",
       "transport": {
@@ -21,39 +20,21 @@
       "environmentVariables": [
         {
           "name": "ABAPILOT_URL",
-          "description": "URL of the ABAPilot SICF endpoint in your SAP system, e.g. https://sap-host:8443/sap/bc/abapilot",
+          "description": "Full URL of the ABAPilot SICF endpoint",
           "isRequired": true,
           "isSecret": false
         },
         {
           "name": "ABAPILOT_USER",
-          "description": "SAP user for basic authentication",
-          "isRequired": false,
+          "description": "SAP user for the connection",
+          "isRequired": true,
           "isSecret": false
         },
         {
           "name": "ABAPILOT_PASSWORD",
-          "description": "SAP password for basic authentication",
-          "isRequired": false,
+          "description": "SAP password",
+          "isRequired": true,
           "isSecret": true
-        },
-        {
-          "name": "ABAPILOT_TOKEN",
-          "description": "Bearer token, alternative to basic authentication",
-          "isRequired": false,
-          "isSecret": true
-        },
-        {
-          "name": "ABAPILOT_CLIENT",
-          "description": "SAP client number, e.g. 100",
-          "isRequired": false,
-          "isSecret": false
-        },
-        {
-          "name": "ABAPILOT_TLS_INSECURE",
-          "description": "Set to 1 to skip TLS certificate verification (development systems only)",
-          "isRequired": false,
-          "isSecret": false
         }
       ]
     }
