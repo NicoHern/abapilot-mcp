@@ -16,12 +16,45 @@ ABAPilot is an in-system AI platform for SAP: natural-language business queries 
 - **On your network:** an MCP server (local process or Docker) that connects any MCP client — Claude, Claude Code, Cursor, ChatGPT — to the SAP-side endpoints.
 - **Your model:** BYOK for Claude, OpenAI, Gemini, Amazon Bedrock — or fully local via Ollama for zero-data-retention deployments.
 
+## Quick start
+
+```bash
+npx -y abapilot
+```
+
+The free [npm connector](https://www.npmjs.com/package/abapilot) links any MCP client to the ABAPilot backend in your SAP system. Add it to e.g. Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "abapilot": {
+      "command": "npx",
+      "args": ["-y", "abapilot"],
+      "env": {
+        "ABAPILOT_URL": "http://<sap-host>:<port>/sap/bc/ZABAPilot",
+        "ABAPILOT_USER": "<sap-user>",
+        "ABAPILOT_PASSWORD": "<sap-password>",
+        "ABAPILOT_CLIENT": "100"
+      }
+    }
+  }
+}
+```
+
 ## Tools
 
-- `query_sap_data` — natural-language queries against live SAP tables (joins resolved automatically, e.g. LFA1 + BSIK), executed under the calling user's SAP authorizations
-- `abap_code_review` — AI review of custom ABAP against best practices
-- `abap_generate` — ABAP code generation for ECC-compatible syntax
-- `abap_document` — auto-documentation of legacy custom code
+Each tool maps 1:1 to a whitelisted endpoint of the ABAPilot dispatcher in your SAP system. The AI client supplies the reasoning; SAP supplies the data, always under the connecting user's own authorizations.
+
+- `sap_read_table_data` — query SAP table rows with ABAP-style WHERE filtering
+- `sap_read_table_structure` — field definitions, types and keys of a table
+- `sap_search_tables` — find tables in the Data Dictionary by keyword
+- `sap_read_code` — read ABAP source (programs, classes, function groups)
+- `sap_read_where_used` — cross-reference lookup (what uses X / what does X use)
+- `sap_syntax_check` — validate ABAP source against the system's release rules
+- `sap_read_dumps` — ST22 runtime errors (short dumps)
+- `sap_read_jobs` — SM37 background jobs, status and runtimes
+
+The full licensed platform exposes 80+ endpoints (natural-language query resolution, code generation, posting with approval gates, monitoring, transports); the connector's tool list follows the `/ABAPILOT/CONFIG` whitelist in your system — remove an endpoint there and the tool disappears, no client change needed.
 
 ## Security model
 
