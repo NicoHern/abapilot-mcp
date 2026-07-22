@@ -1,0 +1,12 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.nicohern/abapilot-mcp",
+  "title": "ABAPilot",
+  "description": "AI & MCP server for SAP ECC and on-premise S/4HANA — in-system ABAP, natural-language business queries and ABAP dev tooling. No BTP, no ADT, no RISE.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/NicoHern/abapilot-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://crimsonconsultingsl.com/abapilot/"
+}
