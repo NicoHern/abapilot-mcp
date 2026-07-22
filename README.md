@@ -2,6 +2,8 @@
 
 ABAPilot is an in-system AI platform for SAP: natural-language business queries and AI-assisted ABAP development on the systems you already run — SAP ECC 6.0 through on-premise S/4HANA (any ABAP-based SAP instance). No BTP, no ADT, no RISE prerequisites. Deploys in ~2 hours.
 
+**Install the connector:** `npm install -g abapilot` · requires a [licensed ABAPilot backend](https://crimsonconsultingsl.com/abapilot/)
+
 **Website:** https://crimsonconsultingsl.com/abapilot/
 
 **Architecture deep-dive:** [ARCHITECTURE.md](ARCHITECTURE.md)
@@ -10,19 +12,9 @@ ABAPilot is an in-system AI platform for SAP: natural-language business queries 
 
 **vs SAP's ABAP MCP Server:** https://crimsonconsultingsl.com/abapilot-vs-sap-abap-mcp-server/
 
-## How it works
-
-- **Inside SAP:** pure-ABAP add-on delivered as a transport into the registered `/ABAPILOT/` namespace, attached to a single SICF (ICF) node. No kernel changes, no Gateway, no BTP, no ADT/Eclipse dependency.
-- **On your network:** an MCP server (local process or Docker) that connects any MCP client — Claude, Claude Code, Cursor, ChatGPT — to the SAP-side endpoints.
-- **Your model:** BYOK for Claude, OpenAI, Gemini, Amazon Bedrock — or fully local via Ollama for zero-data-retention deployments.
+<!-- mcp-name: io.github.NicoHern/abapilot-mcp -->
 
 ## Quick start
-
-```bash
-npx -y abapilot
-```
-
-The free [npm connector](https://www.npmjs.com/package/abapilot) links any MCP client to the ABAPilot backend in your SAP system. Add it to e.g. Claude Desktop:
 
 ```json
 {
@@ -31,30 +23,33 @@ The free [npm connector](https://www.npmjs.com/package/abapilot) links any MCP c
       "command": "npx",
       "args": ["-y", "abapilot"],
       "env": {
-        "ABAPILOT_URL": "http://<sap-host>:<port>/sap/bc/ZABAPilot",
+        "ABAPILOT_URL": "https://<sap-host>:<port>/sap/bc/abapilot",
         "ABAPILOT_USER": "<sap-user>",
-        "ABAPILOT_PASSWORD": "<sap-password>",
-        "ABAPILOT_CLIENT": "100"
+        "ABAPILOT_PASSWORD": "<sap-password>"
       }
     }
   }
 }
 ```
 
+Your SAP credentials go only to your SAP system — never to us or any third party.
+
+## How it works
+
+- **Inside SAP:** pure-ABAP add-on delivered as a transport into the registered `/ABAPILOT/` namespace, attached to a single SICF (ICF) node with dynamic per-endpoint dispatch. No kernel changes, no Gateway, no BTP, no ADT/Eclipse dependency.
+- **On your network:** this MCP connector (`npx abapilot`) links any MCP client — Claude, Claude Code, Cursor, ChatGPT — to the SAP-side endpoints.
+- **Your model:** BYOK for Claude, OpenAI, Gemini, Amazon Bedrock — or fully local via Ollama for zero-data-retention deployments.
+
 ## Tools
 
-Each tool maps 1:1 to a whitelisted endpoint of the ABAPilot dispatcher in your SAP system. The AI client supplies the reasoning; SAP supplies the data, always under the connecting user's own authorizations.
-
-- `sap_read_table_data` — query SAP table rows with ABAP-style WHERE filtering
-- `sap_read_table_structure` — field definitions, types and keys of a table
-- `sap_search_tables` — find tables in the Data Dictionary by keyword
-- `sap_read_code` — read ABAP source (programs, classes, function groups)
-- `sap_read_where_used` — cross-reference lookup (what uses X / what does X use)
-- `sap_syntax_check` — validate ABAP source against the system's release rules
-- `sap_read_dumps` — ST22 runtime errors (short dumps)
-- `sap_read_jobs` — SM37 background jobs, status and runtimes
-
-The full licensed platform exposes 80+ endpoints (natural-language query resolution, code generation, posting with approval gates, monitoring, transports); the connector's tool list follows the `/ABAPILOT/CONFIG` whitelist in your system — remove an endpoint there and the tool disappears, no client change needed.
+- `sap_read_table_data` — query rows from any SAP table with optional WHERE filtering, under the calling user's authorizations
+- `sap_read_table_structure` — field definitions of a table or structure: names, types, lengths, key fields, descriptions
+- `sap_search_tables` — search the SAP Data Dictionary by keyword ('vendor' finds LFA1, LFB1, …)
+- `sap_read_code` — read ABAP source from the connected system: programs, classes, function groups, includes, interfaces
+- `sap_read_where_used` — cross-reference lookup (like SE84), forward and reverse
+- `sap_syntax_check` — validate ABAP source against the connected system's release-accurate syntax rules (ECC 6.0 included)
+- `sap_read_dumps` — read ST22 runtime errors (short dumps)
+- `sap_read_jobs` — read SM37 background jobs: status, runtime, scheduling
 
 ## Security model
 
@@ -65,7 +60,7 @@ The full licensed platform exposes 80+ endpoints (natural-language query resolut
 
 ## Getting access
 
-ABAPilot is a commercial product by [Crimson Consulting SL](https://crimsonconsultingsl.com) (Valencia, Spain). This repository hosts public documentation.
+ABAPilot is a commercial product by [Crimson Consulting SL](https://crimsonconsultingsl.com) (Valencia, Spain). The npm connector is free (MIT); the in-system backend is licensed.
 
 **Request a demo:** https://crimsonconsultingsl.com/contact-crimson-consulting/ — POC deployment on your dev system takes about two hours.
 
