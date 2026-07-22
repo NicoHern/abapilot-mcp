@@ -2,7 +2,7 @@
 
 ABAPilot is an in-system AI platform for SAP: natural-language business queries and AI-assisted ABAP development on the systems you already run — SAP ECC 6.0 through on-premise S/4HANA (any ABAP-based SAP instance). No BTP, no ADT, no RISE prerequisites. Deploys in ~2 hours.
 
-**Install the connector:** `npm install -g abapilot` · requires a [licensed ABAPilot backend](https://crimsonconsultingsl.com/abapilot/)
+**Install the connector:** `npx -y abapilot` · requires a [licensed ABAPilot backend](https://crimsonconsultingsl.com/abapilot/)
 
 **Website:** https://crimsonconsultingsl.com/abapilot/
 
@@ -23,9 +23,10 @@ ABAPilot is an in-system AI platform for SAP: natural-language business queries 
       "command": "npx",
       "args": ["-y", "abapilot"],
       "env": {
-        "ABAPILOT_URL": "https://<sap-host>:<port>/sap/bc/abapilot",
+        "ABAPILOT_URL": "http://<sap-host>:<port>/sap/bc/ZABAPilot",
         "ABAPILOT_USER": "<sap-user>",
-        "ABAPILOT_PASSWORD": "<sap-password>"
+        "ABAPILOT_PASSWORD": "<sap-password>",
+        "ABAPILOT_CLIENT": "100"
       }
     }
   }
@@ -50,6 +51,8 @@ Your SAP credentials go only to your SAP system — never to us or any third par
 - `sap_syntax_check` — validate ABAP source against the connected system's release-accurate syntax rules (ECC 6.0 included)
 - `sap_read_dumps` — read ST22 runtime errors (short dumps)
 - `sap_read_jobs` — read SM37 background jobs: status, runtime, scheduling
+
+The connector's tool list follows the `/ABAPILOT/CONFIG` whitelist in your system — remove an endpoint there and the tool stops working, no client change needed. The full licensed platform exposes 80+ endpoints (natural-language query resolution, code generation, posting with approval gates, monitoring, transports).
 
 ## Security model
 
