@@ -4,6 +4,8 @@ ABAPilot is an in-system AI platform for SAP: natural-language business queries 
 
 **Website:** https://crimsonconsultingsl.com/abapilot/
 
+**Architecture deep-dive:** [ARCHITECTURE.md](ARCHITECTURE.md)
+
 **2026 guide — AI for SAP ECC:** https://crimsonconsultingsl.com/ai-for-sap-ecc/
 
 **vs SAP's ABAP MCP Server:** https://crimsonconsultingsl.com/abapilot-vs-sap-abap-mcp-server/
