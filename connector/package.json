@@ -1,7 +1,7 @@
 {
   "name": "abapilot",
-  "version": "1.0.3",
-  "description": "MCP connector for ABAPilot \u2014 AI access to SAP ECC and on-premise S/4HANA. Requires a licensed ABAPilot backend (/ABAPILOT/ namespace) in your SAP system.",
+  "version": "1.0.4",
+  "description": "MCP connector for ABAPilot \u2014 AI access to SAP ECC 6.0 and on-premise S/4HANA. 49 tools over the in-system ABAPilot backend (/ABAPILOT/ namespace); no ADT and no BTP required.",
   "mcpName": "io.github.NicoHern/abapilot-mcp",
   "type": "module",
   "bin": {
@@ -37,8 +37,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "zod": "^3.23.0"
+    "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "devDependencies": {
     "typescript": "^5.5.0",
