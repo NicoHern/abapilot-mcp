@@ -1,6 +1,6 @@
 {
   "name": "abapilot",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "MCP connector for AI-assisted ABAP development on SAP ECC and on-premise S/4HANA. Requires a licensed ABAPilot backend.",
   "mcpName": "io.github.NicoHern/abapilot-mcp",
   "type": "module",
@@ -10,11 +10,12 @@
   "main": "dist/index.js",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
-    "prepublishOnly": "npm run build"
+    "build": "node build.mjs",
+    "prepack": "npm run build"
   },
   "keywords": [
     "mcp",
@@ -38,9 +39,5 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.5.0",
-    "@types/node": "^20.0.0"
   }
 }

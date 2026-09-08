@@ -1,0 +1,4 @@
+connector/node_modules/
+connector/dist/
+connector/LICENSE
+*.tgz

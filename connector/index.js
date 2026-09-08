@@ -31,7 +31,7 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-const VERSION = "1.0.4";
+const VERSION = "1.0.5";
 
 const cfg = {
   url: process.env.ABAPILOT_URL ?? "",
