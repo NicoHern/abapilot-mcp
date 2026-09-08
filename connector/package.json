@@ -1,7 +1,7 @@
 {
   "name": "abapilot",
   "version": "1.0.4",
-  "description": "MCP connector for ABAPilot \u2014 AI access to SAP ECC 6.0 and on-premise S/4HANA. 49 tools over the in-system ABAPilot backend (/ABAPILOT/ namespace); no ADT and no BTP required.",
+  "description": "MCP connector for AI-assisted ABAP development on SAP ECC and on-premise S/4HANA. Requires a licensed ABAPilot backend.",
   "mcpName": "io.github.NicoHern/abapilot-mcp",
   "type": "module",
   "bin": {

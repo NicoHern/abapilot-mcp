@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
   "name": "io.github.NicoHern/abapilot-mcp",
   "title": "ABAPilot",
-  "description": "MCP server for SAP ECC 6.0 and on-premise S/4HANA: 49 tools for business data, Data Dictionary, ABAP code, operations and audit \u2014 no ADT, no BTP.",
+  "description": "MCP connector for AI-assisted ABAP development on SAP ECC and on-premise S/4HANA. Requires a licensed ABAPilot backend.",
   "version": "1.0.4",
   "repository": {
     "url": "https://github.com/NicoHern/abapilot-mcp",
