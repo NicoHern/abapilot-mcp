@@ -622,7 +622,7 @@ const TOOLS = [
   {
     "name": "sap_patch_code",
     "endpoint": "/patch_code",
-    "description": "Apply delta modifications to existing ABAP programs or classes without sending full source. Reads the current source, applies search/replace operations, and writes back only the changes. Works for PROG, INCL, and CLAS object types. Each replacement is a pair: old_text (exact match) -> new_text. For classes: can replace method implementations, add methods, or change definitions. The source is read from SAP, patched in Python, and written back via the gateway. All ECC 6.0 auto-fixes and inline comment stripping are applied automatically. IMPORTANT: old_text must match EXACTLY as it appears in the source (use sap_read_code first to see the current source).",
+    "description": "Forward a source-patching request to the configured /patch_code endpoint. The public Node connector does not retrieve source, apply replacements in Python or perform compatibility fixes itself. Read the current source before preparing replacements, then verify supported object types, patch arguments and validation behavior against the installed endpoint.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1384,7 +1384,7 @@ const TOOLS = [
   {
     "name": "sap_run_program",
     "endpoint": "/run_program",
-    "description": "Execute an ABAP report program (SUBMIT) and return its list output as text lines. Uses an extended timeout (180s). If the program exceeds even that, it automatically falls back to running the program as a background batch job (SM37) and polls it to completion. That path reports the job's final status only, NOT its output \u2014 read the output separately from the job's spool. Parameter 'report' (required) is the program name. Parameter 'variant' (optional) is a selection screen variant. LIMITATION: Cannot pass individual selection parameters \u2014 only variant-based execution.",
+    "description": "Request execution of an ABAP report through the configured /run_program endpoint. Report name is required; variant-based selection and returned output depend on the installed backend. The public Node connector does not implement a 180-second timeout, background-job fallback or polling workflow. Agree the report and execution scope before use.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1693,7 +1693,7 @@ const TOOLS = [
   {
     "name": "sap_write_code",
     "endpoint": "/write_code",
-    "description": "Low-level ABAP write endpoint. Use sap_write_code_safe instead \u2014 it handles ECC 6.0 compatibility, class patching, and syntax validation automatically. This raw endpoint is only for PROG, INCL, FUGR, FUNC on ECC. For CLAS on ECC, calls are automatically redirected to the safe path.",
+    "description": "Forward an ABAP source-write request to the configured /write_code endpoint. This connector does not redirect class writes, apply compatibility fixes, run a separate syntax check or activate objects itself. Confirm supported object types, authorization, validation and activation behavior on the installed backend before allowing writes.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1750,7 +1750,7 @@ const TOOLS = [
   {
     "name": "sap_write_code_safe",
     "endpoint": "/write_code_safe",
-    "description": "Write ABAP code to SAP with validation and optional ECC 6.0 auto-fixing. On ECC systems: automatically fixes 20+ ECC 6.0 compatibility issues (inline DATA, string templates, CONV/VALUE, etc.) and runs syntax check with retry. On S/4HANA systems: skips ECC fixes (modern ABAP syntax is supported natively), routes PROG and CLAS through ADT for clean deployment. Use this tool for creating/updating programs, includes, and function modules. ECC CLASS WARNING: On ECC, the CLAS handler strips all double-quote characters from source and truncates classes with more than 9 methods. For ECC class modifications, prefer sap_patch_class_method (method bodies) and sap_patch_class_include (definitions). This tool is safe for creating new class skeletons on ECC, or for S/4HANA classes via ADT. CLASS MODIFICATION: To modify an existing class, send the FULL class source in standard CLASS ... DEFINITION / CLASS ... IMPLEMENTATION format. The system handles both creation and update \u2014 if the class exists, it updates methods automatically. Include markers from read_code output are stripped automatically. ABAP TYPING RULES: Use correct types from SE24/SE37 signatures. Do NOT guess STRING vs CHAR. SALV columns: set_short_text(SCRTEXT_S 10ch), set_medium_text(SCRTEXT_M 20ch), set_long_text(SCRTEXT_L 40ch). Do NOT use STRING for parameters that expect typed DDIC fields. IMPORTANT: Read the abap://syntax-rules resource BEFORE writing code to know what ABAP syntax is supported on the connected system (ECC 6.0 vs S/4HANA). On ECC: NO inline DATA(), NO string templates |...|, NO NEW operator, NO CONV/VALUE, SELECT fields use SPACES not commas.",
+    "description": "Forward a request to the configured /write_code_safe endpoint. Validation, compatibility fixes, retries and deployment behavior depend on that installed endpoint; the tool name does not establish those safeguards. The public Node connector does not implement the Python bridge workflow, provide an abap://syntax-rules resource or route writes through ADT itself. Verify the backend contract and required arguments before use; the current input schema is incomplete.",
     "inputSchema": {
       "type": "object",
       "properties": {}
