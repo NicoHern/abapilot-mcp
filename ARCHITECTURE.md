@@ -21,6 +21,12 @@ The public connector reads its backend URL and credentials from environment vari
 
 The connector normalizes selected identifier fields and forwards tool arguments as JSON. It does not itself run the separate Python bridge's validation, classification or multi-step workflow implementations. A tool description is not proof that those behaviors exist on a deployed HTTP endpoint.
 
+## Inspect the public REST framework
+
+[ABAP Dynamic REST](https://github.com/NicoHern/abap-dynamic-rest) is a separate MIT-licensed repository documenting the table-driven REST framework identified in its README as an ABAP foundation of ABAPilot. It includes installation instructions, an endpoint registry, a dispatcher and sample handlers. Readers can inspect how endpoint paths map to handler classes and methods, and review the documented security considerations.
+
+Keep the components distinct: the public REST framework, the public npm MCP connector and the full licensed ABAPilot backend have different scopes. Publishing the framework does not establish that it contains every commercial endpoint or reproduces the recorded demonstration. Confirm the branch, commit, SAP release and required handlers when evaluating it. Compatibility and security claims require installation-specific evidence.
+
 ## Catalog and operation availability
 
 The published npm connector 1.0.5 exposes 49 tool definitions by default. `ABAPILOT_TOOLS` can narrow the catalog presented to a client. This client-side filter is not a substitute for server-side authorization.
