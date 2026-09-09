@@ -4,7 +4,8 @@ ABAPilot by Crimson Consulting connects AI coding assistants to SAP ECC and on-p
 
 **The connector is free and MIT-licensed. Connecting to SAP requires a licensed ABAPilot backend installed in your system.**
 
-- [Watch the four-minute developer demo](https://crimsonconsultingsl.com/abapilot-demo-video/)
+- [Watch the three-minute code-change walkthrough](https://youtu.be/-AZBPH3gAkw)
+- [Read the technical case and test limitations](https://crimsonconsultingsl.com/ai-for-abap-development/#abap-change-tests-documentation)
 - [Set up your IDE](https://crimsonconsultingsl.com/abapilot-abap-mcp-server-any-ide/)
 - [Book a live ABAP workflow demo](https://crimsonconsultingsl.com/demo/)
 
@@ -29,7 +30,7 @@ The current repository catalog lists 49 tools. Availability depends on the insta
 **Business data**
 
 - `sap_read_table_data` — Reads actual data from a SAP table with optional WHERE clause filtering and metadata inclusion
-- `sap_read_table_data_enhanced` — Query data from an SAP table with optional WHERE clause filtering
+- `sap_read_table_data_enhanced` — Query data from a SAP table with optional WHERE clause filtering
 - `sap_read_table_paginated` — Read table data with pagination support for large result sets
 - `sap_stream_table_data` — Streams large table data using offset-based pagination
 - `sap_smart_table_query` — Execute a table query with automatic metadata-driven enhancements
@@ -111,6 +112,12 @@ The public connector includes source and dictionary readers, syntax checking and
 Review which SAP context your chosen AI client and model provider receive. Using your own API key does not by itself establish local processing or a particular retention policy.
 
 ### Evaluate the workflow
+
+The September 2026 walkthrough uses Claude Code, ABAPilot and a lifecycle skill to change a sandbox copy of an existing material-description report, then update its technical specification and test scenarios. Length and invalid-character checks run independently; a regex-cache regression checks that changing patterns does not reuse a stale expression.
+
+The final recorded ABAP Unit run passed **14 test methods**. The scenario document records 15 passes out of 16 scenarios: 14 unit scenarios and a documentation review, with manual report integration not run. Material selection, SALV rendering, MM03 navigation and runtime termination before data selection were not verified by the unit run. The original report and material-master data were not changed. This is one configured sandbox installation, not evidence of production readiness or a promise of identical support on every SAP release.
+
+The [technical case](https://crimsonconsultingsl.com/ai-for-abap-development/#abap-change-tests-documentation) contains screenshots and the coverage boundaries. The [earlier four-minute creation demo](https://crimsonconsultingsl.com/abapilot-demo-video/) is also available.
 
 The recorded demo shows one sandbox workflow. In a live demo we can discuss your system, IDE and requirements before agreeing a customer trial. [Choose a time](https://crimsonconsultingsl.com/demo/).
 
