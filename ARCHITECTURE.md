@@ -1,49 +1,48 @@
-# ABAPilot Architecture
+# ABAPilot architecture and deployment boundaries
 
-A conceptual overview of how ABAPilot connects AI clients to SAP systems. This describes the design, not the implementation — for a live walkthrough against your own system, [request a demo](https://crimsonconsultingsl.com/contact-crimson-consulting/).
+ABAPilot connects MCP-capable AI clients to a licensed SAP-side backend. This page distinguishes the public npm connector from deployment-specific backend behavior. Review the installed versions and enabled operations before a trial.
 
-## Design principles
+## Public connector request flow
 
-1. **The SAP system stays the authority.** ABAPilot never re-implements security: every request executes under the calling SAP user's own authorization profile. If SAPGUI would deny it, ABAPilot denies it.
-2. **Exposure is explicit, never implicit.** Nothing is reachable unless registered in the whitelist. The default surface area is zero.
-3. **No new infrastructure inside SAP.** Standard ABAP objects, one ICF service node, delivered as a normal transport. No kernel changes, no Gateway, no BTP, no ADT dependency — which is why it runs on ECC 6.0 as comfortably as on current S/4HANA.
-4. **The model is a configuration choice.** Cloud (Claude, OpenAI, Gemini, Bedrock via your own keys) or fully local (Ollama). Data residency follows your choice, not ours.
-
-## Request flow
-
-```
-AI client (Claude / Claude Code / Cursor / ChatGPT)
-        |  Model Context Protocol
+```text
+MCP-capable AI client
+        | MCP over standard input/output
         v
-ABAPilot MCP Server        (local process or Docker, on your network)
-        |  HTTPS — single SICF endpoint
+Public abapilot npm connector (external Node.js process)
+        | HTTP POST, JSON payload
+        | Use an HTTPS backend URL for deployment
         v
-+---------------- SAP system ----------------+
-|  ICF handler (dynamic dispatch)            |
-|      |                                     |
-|      +--> /ABAPILOT/CONFIG  (whitelist:    |
-|      |     is this endpoint registered?)   |
-|      +--> SAP authorization check          |
-|      |     (S_TABU_DIS, S_DEVELOP, ...)    |
-|      +--> execute (read-only by default)   |
-|      +--> /ABAPILOT/AUDIT  (who, what,     |
-|            when, parameters)               |
-+--------------------------------------------+
+Configured ABAPilot backend URL + tool endpoint path
+        v
+Licensed SAP-side implementation and configured permissions
 ```
 
-Every request passes four gates in order: whitelist, authorization, execution policy, audit. A failure at any gate stops the request; the audit entry is written regardless.
+The public connector reads its backend URL and credentials from environment variables. It sends a bearer token when configured, otherwise Basic authentication when a user is configured. The connector does not provision SAP users, install the backend or establish that an endpoint enforces a particular authorization object.
 
-## In-system components (`/ABAPILOT/` namespace)
+The connector normalizes selected identifier fields and forwards tool arguments as JSON. It does not itself run the separate Python bridge's validation, classification or multi-step workflow implementations. A tool description is not proof that those behaviors exist on a deployed HTTP endpoint.
 
-- **ICF service node** — the single HTTP entry point; dynamic handler dispatch routes registered operations without per-endpoint development.
-- **`/ABAPILOT/CONFIG`** — the endpoint registry and whitelist. Operations not present here do not exist as far as any client is concerned. Managed by your team, in your system, transportable like any customizing.
-- **`/ABAPILOT/AUDIT`** — append-only request log: user, timestamp, operation, parameters. Built for internal audit and compliance review.
-- **Authorization enforcement** — delegated to the standard SAP authorization model on every call; roles and profiles you already maintain keep working unchanged.
+## Catalog and operation availability
 
-## The MCP layer
+The published npm connector 1.0.5 exposes 49 tool definitions by default. `ABAPILOT_TOOLS` can narrow the catalog presented to a client. This client-side filter is not a substitute for server-side authorization.
 
-The MCP server runs outside SAP, on infrastructure you control. It translates Model Context Protocol tool calls into requests against the SICF endpoint, carries the SAP user context, and returns structured results the AI client can reason over. Because it speaks standard MCP, any compliant client works — today that includes Claude, Claude Code, Cursor and ChatGPT; tomorrow's clients inherit compatibility for free.
+The connector starts without a backend URL so directories and clients can inspect its catalog. Calls in that state return setup instructions. Listing a tool does not demonstrate that its corresponding backend operation is installed, enabled or functional.
 
-## Deployment shape
+The SAP-side endpoint registry may use `/ABAPILOT/CONFIG` or `/TSRA/CONFIG`, depending on the installation. Confirm the registry, endpoint paths, active settings and permissions on the deployed version. Some public definitions have incomplete input schemas; validate the required arguments and behavior against the installed backend before relying on them.
 
-One ABAP transport + one service activation + one container (or local process). Typical time from files-in-hand to first natural-language query on a dev system: about two hours. Nothing about the deployment interferes with a later S/4HANA conversion — the same design carries over.
+## Security and data handling
+
+Use an HTTPS backend URL and review credential handling in the selected MCP client. The connector supports a development-only TLS verification override; keep certificate verification enabled in deployed environments.
+
+Confirm the effective SAP identity, operation-specific authorization checks, permitted data scope and audit records in your installation. Do not infer equivalence with SAP GUI permissions, a read-only default or complete audit coverage from this architecture diagram.
+
+The catalog includes both validated and low-level write operations. Verify syntax checking, activation behavior and failure handling for each permitted write path. The npm connector itself does not supply a universal write-validation gate.
+
+SAP context returned to the AI client may be sent to its model provider. Review the client's routing, provider terms, retention settings and enabled features. Using your own API key or selecting a local model alone does not establish the data handling of the entire workflow.
+
+## Deployment and evidence
+
+Agree the SAP release, backend version, service URL, network access, credentials, enabled endpoints and client configuration with the SAP team. Verify client-specific MCP support and required capabilities. Installation effort and supported operations depend on that environment; there is no universal setup-time or SAP-release guarantee.
+
+The [recorded code-change walkthrough](https://youtu.be/-AZBPH3gAkw) demonstrates one configured sandbox workflow using Claude Code, ABAPilot and a lifecycle skill. Its final ABAP Unit run passed 14 test methods. It does not establish that the public npm connector reproduces every operation in that workflow.
+
+Read the [technical case and coverage limits](https://crimsonconsultingsl.com/ai-for-abap-development/#abap-change-tests-documentation), follow the [IDE setup guide](https://crimsonconsultingsl.com/abapilot-abap-mcp-server-any-ide/), or [book a live evaluation](https://crimsonconsultingsl.com/demo/).
