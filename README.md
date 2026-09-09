@@ -9,6 +9,12 @@ ABAPilot by Crimson Consulting connects AI coding assistants to SAP ECC and on-p
 - [Set up your IDE](https://crimsonconsultingsl.com/abapilot-abap-mcp-server-any-ide/)
 - [Book a live ABAP workflow demo](https://crimsonconsultingsl.com/demo/)
 
+### Evidence you can inspect
+
+- [Four-installation operational checks, 9 September 2026](https://github.com/NicoHern/abapilot-mcp/blob/main/ARCHITECTURE.md#four-installation-operational-checks--9-september-2026): two ECC and two S/4HANA installations passed dictionary reads, component reads, dispatcher-source reads and positive/negative syntax checks. This did not test writes, activation, transports, authorization boundaries or production readiness.
+- [Public MIT-licensed ABAP REST framework](https://github.com/NicoHern/abap-dynamic-rest): inspect the table-driven endpoint registry, dispatcher and example handlers. This framework is separate from the licensed ABAPilot backend and is not proof that the checked installations run an identical public commit.
+- [Published MCP catalog](https://glama.ai/mcp/servers/NicoHern/abapilot-mcp/schema): the npm 1.0.6 connector exposes 49 tools. Catalog discovery is not evidence that every operation works on a particular SAP installation.
+
 ### Start with an existing ABAP program
 
 Ask your assistant to explain a program using source and dictionary definitions retrieved from SAP. Review the references it used before moving to a proposed change. Available operations depend on the connector version, installed backend and enabled endpoints.
@@ -61,9 +67,9 @@ The current repository catalog lists 49 tools. Availability depends on the insta
 - `sap_read_where_used` — Queries SAP's cross-reference tables (WBCROSSGT/WBCROSSI) to find what objects use a given object (forward) or what a given object uses (inverse)
 - `sap_get_enhancements` — List ALL enhancements for a SAP transaction or program in one call
 - `sap_syntax_check` — Validates ABAP source code for syntax errors without creating or activating it
-- `sap_write_code` — Low-level ABAP write endpoint
-- `sap_write_code_safe` — Write ABAP code to SAP with validation and optional ECC 6.0 auto-fixing
-- `sap_patch_code` — Apply delta modifications to existing ABAP programs or classes without sending full source
+- `sap_write_code` — Forward a source-write request; object support, validation and activation depend on the installed backend
+- `sap_write_code_safe` — Forward a request to the backend; safeguards are not implemented by the public Node connector and its input schema is incomplete
+- `sap_patch_code` — Forward a source-patching request; supported patch arguments and validation depend on the backend
 
 **Operations & troubleshooting**
 
@@ -71,7 +77,7 @@ The current repository catalog lists 49 tools. Availability depends on the insta
 - `sap_read_dump_details` — Get detailed information for a specific short dump including full error texts, cause, and solution
 - `sap_read_syslog` — Query system log entries from SAP's SM21 transaction
 - `sap_read_jobs` — Query background job information from SAP's SM37 transaction
-- `sap_run_program` — Execute an ABAP report program (SUBMIT) and return its list output as text lines
+- `sap_run_program` — Request report execution; output depends on the backend, with no timeout or background-job fallback implemented by this connector
 - `sap_run_transaction` — Run the ABAP report behind a report transaction code, optionally with a selection-screen variant, and return its list output
 - `sap_save_variant` — Create or overwrite an ABAP selection-screen VARIANT for a report, so it can be reused by sap_run_program (and the performance trace / headless…
 - `sap_read_user_locks` — Query user lock status from USR02 table
@@ -107,7 +113,7 @@ The licensed backend may expose operations beyond this public catalog. Agree the
 
 ## Validation and data handling
 
-The public connector includes source and dictionary readers, syntax checking and both validated and low-level write operations. A syntax check must not be assumed for every write. Confirm the enabled endpoints, validation behavior, authorization failures and log attribution on your deployed version.
+The public connector advertises source and dictionary readers, syntax checking and write endpoints. Validation and deployment safeguards depend on the installed backend. A syntax check must not be assumed for every write. Confirm the enabled endpoints, validation behavior, authorization failures and log attribution on your deployed version.
 
 Review which SAP context your chosen AI client and model provider receive. Using your own API key does not by itself establish local processing or a particular retention policy.
 
