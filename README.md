@@ -1,5 +1,7 @@
 # ABAPilot — MCP connector for ABAP development on SAP ECC and S/4HANA
 
+[![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/nicohern/abapilot-mcp)
+
 ABAPilot by Crimson Consulting connects AI coding assistants to SAP ECC and on-premise S/4HANA. Use SAP source code and dictionary context to understand existing ABAP, review proposed changes and support development from your preferred MCP-capable coding client.
 
 **The connector is free and MIT-licensed. Connecting to SAP requires a licensed ABAPilot backend installed in your system.**
