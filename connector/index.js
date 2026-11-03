@@ -31,7 +31,7 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-const VERSION = "1.0.6";
+const VERSION = "1.0.7";
 
 const cfg = {
   url: process.env.ABAPILOT_URL ?? "",
@@ -51,8 +51,8 @@ const NOT_CONFIGURED =
   "Point it at your ABAPilot SICF service, e.g. " +
   "ABAPILOT_URL=http://<sap-host>:<port>/sap/bc/ZABAPilot " +
   "(plus ABAPILOT_USER/ABAPILOT_PASSWORD or ABAPILOT_TOKEN). " +
-  "A licensed ABAPilot backend is required: https://crimsonconsultingsl.com/abapilot/ " +
-  "Book a walkthrough on a live ECC or S/4HANA system: https://crimsonconsultingsl.com/demo/";
+  "A licensed ABAPilot backend is required: https://abapilot.ai/ " +
+  "Book a walkthrough on a live ECC or S/4HANA system: https://cal.com/abapilot/demo30min";
 
 if (!cfg.url) {
   // Keep running so MCP clients and registries can introspect the tool

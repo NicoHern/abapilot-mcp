@@ -51,7 +51,7 @@ Agree the SAP release, backend version, service URL, network access, credentials
 
 The [recorded code-change walkthrough](https://youtu.be/-AZBPH3gAkw) demonstrates one configured sandbox workflow using Claude Code, ABAPilot and a lifecycle skill. Its final ABAP Unit run passed 14 test methods. It does not establish that the public npm connector reproduces every operation in that workflow.
 
-Read the [technical case and coverage limits](https://crimsonconsultingsl.com/ai-for-abap-development/#abap-change-tests-documentation), follow the [IDE setup guide](https://crimsonconsultingsl.com/abapilot-abap-mcp-server-any-ide/), or [book a live evaluation](https://crimsonconsultingsl.com/demo/).
+Read the [technical case and coverage limits](https://crimsonconsultingsl.com/ai-for-abap-development/#abap-change-tests-documentation), follow the [IDE setup guide](https://crimsonconsultingsl.com/abapilot-abap-mcp-server-any-ide/), or [book a live evaluation](https://cal.com/abapilot/demo30min).
 
 ## Four-installation operational checks — 9 September 2026
 

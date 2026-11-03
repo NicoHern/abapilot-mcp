@@ -6,16 +6,17 @@ ABAPilot by Crimson Consulting connects AI coding assistants to SAP ECC and on-p
 
 **The connector is free and MIT-licensed. Connecting to SAP requires a licensed ABAPilot backend installed in your system.**
 
+- [ABAPilot website](https://abapilot.ai/)
 - [Watch the three-minute code-change walkthrough](https://youtu.be/-AZBPH3gAkw)
 - [Read the technical case and test limitations](https://crimsonconsultingsl.com/ai-for-abap-development/#abap-change-tests-documentation)
 - [Set up your IDE](https://crimsonconsultingsl.com/abapilot-abap-mcp-server-any-ide/)
-- [Book a live ABAP workflow demo](https://crimsonconsultingsl.com/demo/)
+- [Book a live ABAP workflow demo](https://cal.com/abapilot/demo30min)
 
 ### Evidence you can inspect
 
 - [Four-installation operational checks, 9 September 2026](https://github.com/NicoHern/abapilot-mcp/blob/main/ARCHITECTURE.md#four-installation-operational-checks--9-september-2026): two ECC and two S/4HANA installations passed dictionary reads, component reads, dispatcher-source reads and positive/negative syntax checks. This did not test writes, activation, transports, authorization boundaries or production readiness.
 - [Public MIT-licensed ABAP REST framework](https://github.com/NicoHern/abap-dynamic-rest): inspect the table-driven endpoint registry, dispatcher and example handlers. This framework is separate from the licensed ABAPilot backend and is not proof that the checked installations run an identical public commit.
-- [Published MCP catalog](https://glama.ai/mcp/servers/NicoHern/abapilot-mcp/schema): the npm 1.0.6 connector exposes 49 tools. Catalog discovery is not evidence that every operation works on a particular SAP installation.
+- [Published MCP catalog](https://glama.ai/mcp/servers/NicoHern/abapilot-mcp/schema): the npm 1.0.7 connector exposes 49 tools. Catalog discovery is not evidence that every operation works on a particular SAP installation.
 
 ### Start with an existing ABAP program
 
@@ -127,7 +128,7 @@ The final recorded ABAP Unit run passed **14 test methods**. The scenario docume
 
 The [technical case](https://crimsonconsultingsl.com/ai-for-abap-development/#abap-change-tests-documentation) contains screenshots and the coverage boundaries. The [earlier four-minute creation demo](https://crimsonconsultingsl.com/abapilot-demo-video/) is also available.
 
-The recorded demo shows one sandbox workflow. In a live demo we can discuss your system, IDE and requirements before agreeing a customer trial. [Choose a time](https://crimsonconsultingsl.com/demo/).
+The recorded demo shows one sandbox workflow. In a live demo we can discuss your system, IDE and requirements before agreeing a customer trial. [Choose a time](https://cal.com/abapilot/demo30min).
 
 ## Further reading
 

@@ -3,18 +3,18 @@
   "name": "io.github.NicoHern/abapilot-mcp",
   "title": "ABAPilot",
     "description": "ABAP MCP connector for SAP ECC and on-premise S/4HANA. Requires a licensed ABAPilot backend.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "repository": {
     "url": "https://github.com/NicoHern/abapilot-mcp",
     "source": "github"
   },
-  "websiteUrl": "https://crimsonconsultingsl.com/abapilot/",
+  "websiteUrl": "https://abapilot.ai/",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "abapilot",
-      "version": "1.0.6",
+      "version": "1.0.7",
       "transport": {
         "type": "stdio"
       },
