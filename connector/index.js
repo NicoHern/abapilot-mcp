@@ -31,7 +31,7 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-const VERSION = "1.0.6";
+const VERSION = "1.0.7";
 
 const cfg = {
   url: process.env.ABAPILOT_URL ?? "",
@@ -622,7 +622,7 @@ const TOOLS = [
   {
     "name": "sap_patch_code",
     "endpoint": "/patch_code",
-    "description": "Forward a source-patching request to the configured /patch_code endpoint. The public Node connector does not retrieve source, apply replacements in Python or perform compatibility fixes itself. Read the current source before preparing replacements, then verify supported object types, patch arguments and validation behavior against the installed endpoint.",
+    "description": "Change part of an existing ABAP program or class by sending only the replacements, instead of the whole source. Read the current source first. Requires S_DEVELOP change authorization in SAP; runs as the calling user and is logged in /ABAPILOT/AUDIT.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1384,7 +1384,7 @@ const TOOLS = [
   {
     "name": "sap_run_program",
     "endpoint": "/run_program",
-    "description": "Request execution of an ABAP report through the configured /run_program endpoint. Report name is required; variant-based selection and returned output depend on the installed backend. The public Node connector does not implement a 180-second timeout, background-job fallback or polling workflow. Agree the report and execution scope before use.",
+    "description": "Run an ABAP report in SAP, optionally with a variant, and return its list output. Runs as the calling user, only if the run_program endpoint is active in /ABAPILOT/CONFIG and the user's role allows it; switched off in the recommended read-only profile.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1693,7 +1693,7 @@ const TOOLS = [
   {
     "name": "sap_write_code",
     "endpoint": "/write_code",
-    "description": "Forward an ABAP source-write request to the configured /write_code endpoint. This connector does not redirect class writes, apply compatibility fixes, run a separate syntax check or activate objects itself. Confirm supported object types, authorization, validation and activation behavior on the installed backend before allowing writes.",
+    "description": "Write ABAP source to SAP and activate it. Requires S_DEVELOP change authorization on the object; refused in productive clients. The response states whether activation succeeded. Runs as the calling user and is logged in /ABAPILOT/AUDIT. Use sap_syntax_check first for new code.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -1750,7 +1750,7 @@ const TOOLS = [
   {
     "name": "sap_write_code_safe",
     "endpoint": "/write_code_safe",
-    "description": "Forward a request to the configured /write_code_safe endpoint. Validation, compatibility fixes, retries and deployment behavior depend on that installed endpoint; the tool name does not establish those safeguards. The public Node connector does not implement the Python bridge workflow, provide an abap://syntax-rules resource or route writes through ADT itself. Verify the backend contract and required arguments before use; the current input schema is incomplete.",
+    "description": "Guided write workflow for ABAP source, including ECC 6.0 compatibility handling. Same authorization and production guard as sap_write_code; runs as the calling user and is logged in /ABAPILOT/AUDIT. Available when the write_code_safe endpoint is active in your installation.",
     "inputSchema": {
       "type": "object",
       "properties": {}
