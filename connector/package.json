@@ -1,7 +1,7 @@
 {
   "name": "abapilot",
-  "version": "1.0.6",
-  "description": "MCP connector for AI-assisted ABAP development on SAP ECC and on-premise S/4HANA. Requires a licensed ABAPilot backend.",
+  "version": "1.0.7",
+  "description": "Governed MCP access to SAP ECC, S/4HANA and RISE, as the named SAP user. Needs the ABAPilot backend.",
   "mcpName": "io.github.NicoHern/abapilot-mcp",
   "type": "module",
   "bin": {
@@ -25,7 +25,12 @@
     "ecc",
     "s4hana",
     "model-context-protocol",
-    "ai"
+    "ai",
+    "rise",
+    "s4hana-private-cloud",
+    "abap-mcp-server",
+    "sap-authorization",
+    "audit"
   ],
   "author": "Crimson Consulting SL (https://crimsonconsultingsl.com)",
   "license": "MIT",
@@ -33,7 +38,7 @@
     "type": "git",
     "url": "git+https://github.com/NicoHern/abapilot-mcp.git"
   },
-  "homepage": "https://crimsonconsultingsl.com/abapilot/",
+  "homepage": "https://abapilot.ai",
   "engines": {
     "node": ">=18"
   },

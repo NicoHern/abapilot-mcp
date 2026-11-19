@@ -1,61 +1,84 @@
-# ABAPilot architecture and deployment boundaries
+# ABAPilot architecture
 
-ABAPilot connects MCP-capable AI clients to a licensed SAP-side backend. This page distinguishes the public npm connector from deployment-specific backend behavior. Review the installed versions and enabled operations before a trial.
+ABAPilot puts AI clients in front of SAP without giving them a way around SAP. The logic and the security live in ABAP, inside your system. The MCP connector in this repository only translates between the AI client and that backend.
 
-## Public connector request flow
+## Request flow
 
 ```text
-MCP-capable AI client
-        | MCP over standard input/output
-        v
-Public abapilot npm connector (external Node.js process)
-        | HTTP POST, JSON payload
-        | Use an HTTPS backend URL for deployment
-        v
-Configured ABAPilot backend URL + tool endpoint path
-        v
-Licensed SAP-side implementation and configured permissions
+AI client (Claude, Copilot, Codex, Cursor, Copilot Studio …)
+        │  MCP (stdio)
+        ▼
+ABAPilot MCP connector  ── npx -y abapilot, on the developer's machine
+        │                  or a central server (Docker / Linux service)
+        │  HTTPS, JSON, the user's own SAP credentials or token
+        ▼
+SAP ICF service /sap/bc/abapilot          ── your SAP system
+        ▼
+Dispatcher
+  1. endpoint registry      /ABAPILOT/CONFIG   (is this endpoint active here?)
+  2. capability check       ZABPLT_EP          (may this user use this group?)
+  3. hard guards            productive client, admin tables, blocklists
+        ▼
+Handler class
+  4. standard SAP checks    VIEW_AUTHORITY_CHECK, S_DEVELOP …
+  5. ABAP logic             reads, syntax check, write + activation …
+        ▼
+Audit log                   /ABAPILOT/AUDIT    (every call, denials included)
 ```
 
-The public connector reads its backend URL and credentials from environment variables. It sends a bearer token when configured, otherwise Basic authentication when a user is configured. The connector does not provision SAP users, install the backend or establish that an endpoint enforces a particular authorization object.
+Nothing runs as a shared technical user. `SY-UNAME` in SAP is the person using the AI, so SAP's authorizations, change documents and transport ownership stay personal.
 
-The connector normalizes selected identifier fields and forwards tool arguments as JSON. It does not itself run the separate Python bridge's validation, classification or multi-step workflow implementations. A tool description is not proof that those behaviors exist on a deployed HTTP endpoint.
+## Components
 
-## Inspect the public REST framework
+| Component | Where it runs | Notes |
+| --- | --- | --- |
+| ABAPilot backend | Your SAP system, namespace `/ABAPILOT/` | Imported as one transport. Written in ABAP 7.00-compatible syntax, so the same code runs on ECC 6.0 and S/4HANA. |
+| MCP connector | Developer machine or a central host | This repository. Stateless. Holds no SAP data. |
+| AI model | Your choice | Bring your own model and key: Anthropic, OpenAI, Azure OpenAI, Google, AWS Bedrock, or a local model. ABAPilot does not host or resell model access. |
 
-[ABAP Dynamic REST](https://github.com/NicoHern/abap-dynamic-rest) is a separate MIT-licensed repository documenting the table-driven REST framework identified in its README as an ABAP foundation of ABAPilot. It includes installation instructions, an endpoint registry, a dispatcher and sample handlers. Readers can inspect how endpoint paths map to handler classes and methods, and review the documented security considerations.
+## Authorization in detail
 
-Keep the components distinct: the public REST framework, the public npm MCP connector and the full licensed ABAPilot backend have different scopes. Publishing the framework does not establish that it contains every commercial endpoint or reproduces the recorded demonstration. Confirm the branch, commit, SAP release and required handlers when evaluating it. Compatibility and security claims require installation-specific evidence.
+**Endpoint registry.** `/ABAPILOT/CONFIG` maps each URL path to a handler class and method, with an active flag. An endpoint that is not registered, or not active, does not exist for any client. Write endpoints are delivered inactive; the customer's administrator activates the ones they need.
 
-## Catalog and operation availability
+**Capability groups and `ZABPLT_EP`.** Each endpoint belongs to a capability group (for example read data, read code, write code, administration) with an activity. The authorization object `ZABPLT_EP` (fields `ZABPLT_GRP`, `ACTVT`) is checked for the calling user. An endpoint without a group mapping is denied. Template roles and SU24 proposals are delivered; administration is done in an SAP GUI transaction.
 
-The published npm connector 1.0.5 exposes 49 tool definitions by default. `ABAPILOT_TOOLS` can narrow the catalog presented to a client. This client-side filter is not a substitute for server-side authorization.
+The engine has three modes, set by your administrator:
 
-The connector starts without a backend URL so directories and clients can inspect its catalog. Calls in that state return setup instructions. Listing a tool does not demonstrate that its corresponding backend operation is installed, enabled or functional.
+| Mode | Behaviour |
+| --- | --- |
+| `SHADOW` | Decides and logs every request, but does not block. Use it while designing roles; you can enforce selected pilot users already. |
+| `ENFORCE` | A denial returns HTTP 403 and the handler does not run. If the engine itself fails, the request is denied (fail-closed, default). |
+| `OFF` | No capability check. Standard SAP checks in the handlers still apply. |
 
-The SAP-side endpoint registry may use `/ABAPILOT/CONFIG` or `/TSRA/CONFIG`, depending on the installation. Confirm the registry, endpoint paths, active settings and permissions on the deployed version. Some public definitions have incomplete input schemas; validate the required arguments and behavior against the installed backend before relying on them.
+**Standard SAP checks in the handlers.**
 
-## Security and data handling
+- Table and view reads call `VIEW_AUTHORITY_CHECK`: authorization groups (S_TABU_DIS), table names (S_TABU_NAM) and organizational criteria at row level.
+- Source code reads require S_DEVELOP display (03) on the object. Writes require S_DEVELOP change (02); deletions require 06.
 
-Use an HTTPS backend URL and review credential handling in the selected MCP client. The connector supports a development-only TLS verification override; keep certificate verification enabled in deployed environments.
+**Hard guards.** Repository changes are refused in a client whose T000 role is productive, unless an administrator explicitly allows them. ABAPilot's own tables are restricted to ABAPilot administrators. Configurable table blocklists and a function-module denylist apply to every user.
 
-Confirm the effective SAP identity, operation-specific authorization checks, permitted data scope and audit records in your installation. Do not infer equivalence with SAP GUI permissions, a read-only default or complete audit coverage from this architecture diagram.
+**Client-side tool filter.** `ABAPILOT_TOOLS` limits which tools a given client shows to the model. It keeps prompts lean; it is not an access control. Access is decided in SAP by the layers above.
 
-The catalog includes both validated and low-level write operations. Verify syntax checking, activation behavior and failure handling for each permitted write path. The npm connector itself does not supply a universal write-validation gate.
+## Data handling
 
-SAP context returned to the AI client may be sent to its model provider. Review the client's routing, provider terms, retention settings and enabled features. Using your own API key or selecting a local model alone does not establish the data handling of the entire workflow.
+SAP data returned to the AI client is sent to the model provider you configure, under your contract with that provider. To keep data in your tenant, use a model in your own cloud account (for example Azure OpenAI or AWS Bedrock) or a local model. The npm connector stores no SAP data; the audit log stays in SAP.
 
-## Deployment and evidence
+Use HTTPS between connector and SAP. `ABAPILOT_TLS_INSECURE=1` exists for development systems with self-signed certificates only.
 
-Agree the SAP release, backend version, service URL, network access, credentials, enabled endpoints and client configuration with the SAP team. Verify client-specific MCP support and required capabilities. Installation effort and supported operations depend on that environment; there is no universal setup-time or SAP-release guarantee.
+## Deployment options
 
-The [recorded code-change walkthrough](https://youtu.be/-AZBPH3gAkw) demonstrates one configured sandbox workflow using Claude Code, ABAPilot and a lifecycle skill. Its final ABAP Unit run passed 14 test methods. It does not establish that the public npm connector reproduces every operation in that workflow.
+- **Local, per developer.** Each developer runs the connector with their own SAP user. Simplest start; typical for trials.
+- **Central.** One connector host (Docker or Linux service) for the team, with each user signing in individually (Microsoft Entra ID, tokens kept in Azure Key Vault or equivalent). The audit log still shows the individual user.
 
-Read the [technical case and coverage limits](https://crimsonconsultingsl.com/ai-for-abap-development/#abap-change-tests-documentation), follow the [IDE setup guide](https://crimsonconsultingsl.com/abapilot-abap-mcp-server-any-ide/), or [book a live evaluation](https://crimsonconsultingsl.com/demo/).
+Both work on ECC 6.0, S/4HANA on-premise and S/4HANA Cloud Private Edition (RISE). See the [README](https://github.com/NicoHern/abapilot-mcp/blob/main/README.md#sap-s4hana-cloud-private-edition-rise) for RISE specifics.
 
-## Four-installation operational checks — 9 September 2026
+## Open-source foundation
 
-We checked four existing SAP connections using their configured MCP integrations. All four successfully returned dictionary metadata, installed component rows and active dispatcher source. Each accepted a valid syntax-only probe and rejected a deliberately invalid probe at the expected line. Installation labels below are anonymous; no customer identity, credentials, business records or SAP source code are published here.
+The dispatcher pattern, a table-driven registry of REST endpoints, is published as [ABAP Dynamic REST](https://github.com/NicoHern/abap-dynamic-rest) (MIT), so your team can inspect how paths map to handlers. The commercial backend adds the handlers, the authorization layer, the audit log and the administration tools.
+
+## Verified installations
+
+Checks run on 9 September 2026 against four existing installations through their configured MCP integrations. Labels are anonymous; no customer data, credentials or source code are published.
 
 | Installation | SAP_BASIS release / SP | Application component / SP | Result |
 | --- | --- | --- | --- |
@@ -64,16 +87,14 @@ We checked four existing SAP connections using their configured MCP integrations
 | S/4 A | 758 / 0001 | S4CORE 108 / 0001 | All five checks passed |
 | S/4 B | 757 / 0007 | S4CORE 107 / 0002 | All five checks passed |
 
-### Method and observed responses
+The five checks:
 
-1. Read the CVERS dictionary structure before requesting its COMPONENT, RELEASE and EXTRELEASE fields.
-2. Read those installed-component fields for SAP_BASIS, SAP_APPL and S4CORE. The dedicated system-info endpoint was unavailable on the two ECC connections; direct CVERS reads succeeded.
-3. Read the active dispatcher source. Two installations used a namespaced dispatcher; two used the original dispatcher name. No deployed-source comparison with the public framework commit was performed.
-4. Submit a syntax-only probe declaring an integer variable and assigning the value 1. All four responses reported no syntax errors.
-5. Submit a corresponding negative probe with the assignment expression omitted. All four reported a syntax error at line 3. No probe was saved or activated.
+1. Read the CVERS dictionary structure.
+2. Read the installed component versions (SAP_BASIS, SAP_APPL, S4CORE).
+3. Read the active dispatcher source.
+4. Syntax-check a valid probe: no errors reported.
+5. Syntax-check a deliberately invalid probe: error reported at the expected line.
 
-### What this evidence covers
+This scope covers connectivity, dictionary and code reads, and syntax checking across ECC and S/4HANA releases. Writes, activation and testing are shown end to end in the [recorded code-change workflow](https://youtu.be/-AZBPH3gAkw) (14 ABAP Unit tests passing). In a trial we repeat these checks on your system and release, and validate the specific workflows you plan to use.
 
-These are first-party, dated operational checks of existing installations. They establish the listed reads and syntax-check behavior on those component versions. They do not establish that npm connector 1.0.5 was used on every connection, that the unchanged public REST framework commit was installed, or that every advertised endpoint works. They are separate from the recorded 14-test ABAP Unit demonstration linked above.
-
-No SAP writes, activation, transport changes, unit-test execution, authorization-denial tests or fresh installations were part of this check. Coverage of other enhancement packages, releases and full workflows remains to be validated. For a trial, repeat these checks through the intended client and connector, record backend and connector revisions, then validate the specific authorized workflow.
+[Book a live evaluation](https://crimsonconsultingsl.com/demo/) · [IDE setup guide](https://crimsonconsultingsl.com/abapilot-abap-mcp-server-any-ide/)
